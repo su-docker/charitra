@@ -50,7 +50,7 @@
             .attr("width", width)
             .attr("height", height);
 
-    d3.json("/world-countries.json", function(collection) {
+    d3.json("world-countries.json", function(collection) {
         feature = feature
                 .data(collection.features)
                 .enter().append("path")
