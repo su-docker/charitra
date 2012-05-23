@@ -7,9 +7,19 @@ function initMap() {
 }
 
 function initSize() {
-
     $("#map").parent().attr("height", $(document).height());
     $("#map").parent().attr("width", $(document).width());
+}
+
+function plot() {
+    var translator = d3.geo.mercator();
+    var points = [[13.081,80.274], [500,800]];
+    d3.select("#map").selectAll("circle").data(points).enter()
+        .append("circle")
+        .attr("cx", function(d) { return translator.translate(d) })
+        .attr("cy", function(d) { return d[1] })
+        .attr("r", "20")
+        .attr("fill", "#f08080");
 }
 
 function initZoom() {
