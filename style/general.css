@@ -1,3 +1,14 @@
 body {
     margin: 0px;
 }
+
+#slider {
+    float: left;
+    width: 400px; /* Will be overridden by script */
+    margin: 10px 20px;
+}
+
+#controls {
+    float: left;
+    position: absolute;
+}

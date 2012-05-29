@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+    .frame {
+        stroke: #000;
+        fill: none;
+        pointer-events: all;
+    }
+
+    .feature {
+        fill: #B1B9BA;
+        stroke: #fff;
+    }
+
+    .area {
+        fill: #4049C2;
+        stroke: #2F3580;
+    }
+
+</style>
+<link type="text/css" rel="stylesheet" href="style/general.css"/>
+<link type="text/css" href="style/jquery-ui-1.8.20.custom.css" rel="stylesheet"/>
+<script src="script/d3.v2.js"></script>
+<script src="script/jquery-1.7.2.js"></script>
+<script src="script/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="script/underscore-min.js"></script>
+<script src="script/history.js"></script>
+<body>
+<div id="controls">
+    <div id="slider"></div>
+</div>
+<script>
+
+    var margin = {top:0, right:0, bottom:0, left:0},
+            width = $(document).width(),
+            height = $(document).height();
+
+    var projection = d3.geo.mercator()
+            .scale(width)
+            .translate([width / 2, height / 2]);
+
+    var path = d3.geo.path()
+            .projection(projection);
+
+    var zoom = d3.behavior.zoom()
+            .translate(projection.translate())
+            .scale(projection.scale())
+            .scaleExtent([height, 20 * height])
+            .on("zoom", move);
+
+    var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(zoom);
+
+    var g = svg.append("g"),
+            feature = g.selectAll(".feature"),
+            area = g.selectAll(".area");
+
+    svg.append("rect")
+            .attr("class", "frame")
+            .attr("width", width)
+            .attr("height", height);
+
+    d3.json("json/world-countries.json", function (collection) {
+        feature = feature
+                .data(collection.features)
+                .enter().append("path")
+                .attr("class", "feature")
+                .attr("d", path);
+    });
+
+    function move() {
+        projection.translate(d3.event.translate).scale(d3.event.scale);
+        feature.attr("d", path);
+    }
+
+    $(function () {
+        // Slider
+        $('#slider').slider({
+            value:0,
+            min:0,
+            max:2000,
+            step:50,
+            slide:function (event, ui) {
+                plot(ui.value);
+            }
+        });
+        $('#slider').attr("style", "width:" + (width - 70) + "px");
+    });
+
+    function plot(year) {
+        console.log(year);
+        d3.json("json/history_events.json", function (collection) {
+            var toPlot = _.filter(collection.features, function (feature) {
+                return feature.properties['year'] == year
+            });
+            console.log(toPlot);
+            area
+                    .data(toPlot)
+                    .enter().append("path")
+                    .attr("class", "feature area")
+                    .attr("d", path);
+            //Refresh the feature items to include the newly added ones
+            area = g.selectAll(".area");
+            feature = g.selectAll(".feature");
+        });
+    }
+
+
+</script>
+</body>
