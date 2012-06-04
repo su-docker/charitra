@@ -29,6 +29,7 @@
 <body>
 <div id="controls">
     <div id="slider"></div>
+    <div id="year"></div>
 </div>
 <script>
 
@@ -73,42 +74,50 @@
                 .attr("d", path);
     });
 
+    var events;
+    d3.json("json/history_events.json", function (collection) {
+        events = collection;
+    });
+
     function move() {
         projection.translate(d3.event.translate).scale(d3.event.scale);
         feature.attr("d", path);
+    }
+
+    function plot(year) {
+        console.log(year);
+        var toPlot = _.filter(events.features, function (feature) {
+            return feature.properties['year'] == year
+        });
+        area = g.selectAll(".area").data(toPlot);
+        area.enter().append("path")
+                .attr("class", "feature area")
+                .attr("d", path);
+        area.exit().remove();
+
+        //Refresh the feature items to include the newly added ones
+        feature = g.selectAll(".feature");
+    }
+
+    //Year label
+    function updateYearLabel(label) {
+        $("#year").html(label);
     }
 
     $(function () {
         // Slider
         $('#slider').slider({
             value:0,
-            min:0,
+            min:1000,
             max:2000,
             step:50,
             slide:function (event, ui) {
                 plot(ui.value);
+                updateYearLabel(ui.value);
             }
         });
         $('#slider').attr("style", "width:" + (width - 70) + "px");
     });
-
-    function plot(year) {
-        console.log(year);
-        d3.json("json/history_events.json", function (collection) {
-            var toPlot = _.filter(collection.features, function (feature) {
-                return feature.properties['year'] == year
-            });
-            console.log(toPlot);
-            area
-                    .data(toPlot)
-                    .enter().append("path")
-                    .attr("class", "feature area")
-                    .attr("d", path);
-            //Refresh the feature items to include the newly added ones
-            area = g.selectAll(".area");
-            feature = g.selectAll(".feature");
-        });
-    }
 
 
 </script>
