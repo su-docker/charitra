@@ -85,11 +85,10 @@
     }
 
     function plot(year) {
-        console.log(year);
         var toPlot = _.filter(events.features, function (feature) {
             return feature.properties['year'] == year
         });
-        area = g.selectAll(".area").data(toPlot);
+        area = g.selectAll(".area").data(toPlot).attr("d", path);
         area.enter().append("path")
                 .attr("class", "feature area")
                 .attr("d", path);
