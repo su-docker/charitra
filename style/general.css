@@ -6,10 +6,6 @@ body {
     float: left;
     width: 400px; /* Will be overridden by script */
     margin: 10px 20px;
-}
-
-#slider {
-    float: left;
     position: absolute;
 }
 
@@ -18,4 +14,23 @@ body {
     font-size: 48px;
     bottom: 20px;
     right: 20px;
+}
+
+.frame {
+    stroke: #000;
+    fill: none;
+    pointer-events: all;
+}
+
+.feature {
+    fill: #B1B9BA;
+    stroke: #fff;
+}
+
+.area {
+    fill: #FFEECA;
+}
+
+.point {
+    fill: #E01B6A;
 }

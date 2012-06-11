@@ -1,24 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<style>
-
-    .frame {
-        stroke: #000;
-        fill: none;
-        pointer-events: all;
-    }
-
-    .feature {
-        fill: #B1B9BA;
-        stroke: #fff;
-    }
-
-    .area {
-        fill: #4049C2;
-        stroke: #2F3580;
-    }
-
-</style>
 <link type="text/css" rel="stylesheet" href="style/general.css"/>
 <link type="text/css" href="style/jquery-ui-1.8.20.custom.css" rel="stylesheet"/>
 <script src="script/d3.v2.js"></script>
@@ -47,7 +28,7 @@
     var zoom = d3.behavior.zoom()
             .translate(projection.translate())
             .scale(projection.scale())
-            .scaleExtent([height, 20 * height])
+            .scaleExtent([height, 50 * height])
             .on("zoom", move);
 
     var svg = d3.select("body").append("svg")
@@ -75,13 +56,21 @@
     });
 
     var events;
-    d3.json("json/history_events.json", function (collection) {
+    d3.json("json/areas-of-interest.json", function (collection) {
         events = collection;
+    });
+
+    var points_of_interest;
+    d3.json("json/points-of-interest.json", function(collection) {
+        points_of_interest = collection;
     });
 
     function move() {
         projection.translate(d3.event.translate).scale(d3.event.scale);
         feature.attr("d", path);
+        g.selectAll(".point")
+                .attr("cx", function(x) {return projection(x.location)[0]})
+                .attr("cy", function(x) {return projection(x.location)[1]});
     }
 
     function plot(year) {
@@ -93,6 +82,17 @@
                 .attr("class", "feature area")
                 .attr("d", path);
         area.exit().remove();
+
+        //Draw the points of interest
+        var points = g.selectAll(".point").data(points_of_interest.points)
+                        .attr("cx", function(x) {return projection(x.location)[0]})
+                        .attr("cy", function(x) {return projection(x.location)[1]});
+        points.enter().append("circle")
+                .attr("cx", function(x) {return projection(x.location)[0]})
+                .attr("cy", function(x) {return projection(x.location)[1]})
+                .attr("r", 5)
+                .attr("class", "point feature");
+        points.exit().remove();
 
         //Refresh the feature items to include the newly added ones
         feature = g.selectAll(".feature");
