@@ -61,16 +61,14 @@
     });
 
     var points_of_interest;
-    d3.json("json/points-of-interest.json", function(collection) {
+    d3.json("json/points-of-interest.json", function (collection) {
         points_of_interest = collection;
     });
 
     function move() {
         projection.translate(d3.event.translate).scale(d3.event.scale);
         feature.attr("d", path);
-        g.selectAll(".point")
-                .attr("cx", function(x) {return projection(x.location)[0]})
-                .attr("cy", function(x) {return projection(x.location)[1]});
+//        plot_point_of_interest(points_of_interest.points);
     }
 
     function plot(year) {
@@ -83,19 +81,26 @@
                 .attr("d", path);
         area.exit().remove();
 
-        //Draw the points of interest
-        var points = g.selectAll(".point").data(points_of_interest.points)
-                        .attr("cx", function(x) {return projection(x.location)[0]})
-                        .attr("cy", function(x) {return projection(x.location)[1]});
-        points.enter().append("circle")
-                .attr("cx", function(x) {return projection(x.location)[0]})
-                .attr("cy", function(x) {return projection(x.location)[1]})
-                .attr("r", 5)
-                .attr("class", "point feature");
-        points.exit().remove();
+        plot_point_of_interest(points_of_interest.points);
 
         //Refresh the feature items to include the newly added ones
         feature = g.selectAll(".feature");
+    }
+
+    //Draw points of interest
+    function plot_point_of_interest(points) {
+        var points = g.selectAll(".point").data(points)
+                .attr("d", function (x) {
+                    return x.drawing
+                })
+                .attr("transform", function (x) {
+                    return "translate(" + projection(x.location)[0] + "," + projection(x.location)[1] + ")"
+                });
+        points.enter().append("path")
+                .attr("class", "point feature")
+                .attr("d", path);
+        points.exit().remove();
+
     }
 
     //Year label
