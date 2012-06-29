@@ -68,7 +68,7 @@
     function move() {
         projection.translate(d3.event.translate).scale(d3.event.scale);
         feature.attr("d", path);
-//        plot_point_of_interest(points_of_interest.points);
+        g.selectAll(".point").attr("transform", iconPosition);
     }
 
     function plot(year) {
@@ -81,7 +81,10 @@
                 .attr("d", path);
         area.exit().remove();
 
-        plot_point_of_interest(points_of_interest.points);
+        var pointsToPlot = _.filter(points_of_interest.points, function(point) {
+           return point['year'] == year
+        });
+        plot_point_of_interest(pointsToPlot);
 
         //Refresh the feature items to include the newly added ones
         feature = g.selectAll(".feature");
@@ -90,17 +93,22 @@
     //Draw points of interest
     function plot_point_of_interest(points) {
         var points = g.selectAll(".point").data(points)
-                .attr("d", function (x) {
-                    return x.drawing
-                })
-                .attr("transform", function (x) {
-                    return "translate(" + projection(x.location)[0] + "," + projection(x.location)[1] + ")"
-                });
+                .attr("d", iconPath)
+                .attr("transform", iconPosition)
+                .on("click", function(d,i) {alert("Hey you!");});
         points.enter().append("path")
-                .attr("class", "point feature")
-                .attr("d", path);
+                .attr("class", "point")
+                .attr("d", iconPath)
+                .attr("transform", iconPosition);
         points.exit().remove();
+    }
 
+    function iconPath(data, index) {
+        return data.drawing;
+    }
+
+    function iconPosition(data, index) {
+        return "translate(" + projection(data.location).toString() + ")";
     }
 
     //Year label
