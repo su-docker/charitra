@@ -34,3 +34,17 @@ body {
 .point {
     fill: #245dff;
 }
+
+#text_container {
+    display: none;
+    position: absolute;
+    z-index: 100;
+    width: 50%;
+    height: 90%;
+    top: 2%;
+    left: 2%;
+    border-radius: 10px;
+    border: 1px gray solid;
+    padding: 10px;
+    background-color: rgba(204,204,255,0.5);
+}

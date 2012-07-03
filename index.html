@@ -29,26 +29,23 @@
             .translate(projection.translate())
             .scale(projection.scale())
             .scaleExtent([height, 50 * height])
-            .on("zoom", move);
+            .on("zoom", panAndZoom);
 
     var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
-            .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
-            .call(zoom);
+            .attr("height", height + margin.top + margin.bottom);
 
-    var g = svg.append("g"),
+    var g = svg.append("g").call(zoom),
             feature = g.selectAll(".feature"),
             area = g.selectAll(".area");
 
-    svg.append("rect")
+    g.append("rect")
             .attr("class", "frame")
             .attr("width", width)
             .attr("height", height);
 
     d3.json("json/world-countries.json", function (collection) {
-        feature = feature
+        g.selectAll("path")
                 .data(collection.features)
                 .enter().append("path")
                 .attr("class", "feature")
@@ -65,10 +62,11 @@
         points_of_interest = collection;
     });
 
-    function move() {
+    function panAndZoom() {
         projection.translate(d3.event.translate).scale(d3.event.scale);
-        feature.attr("d", path);
-        g.selectAll(".point").attr("transform", iconPosition);
+        g.selectAll("path").attr("d", path);
+        g.selectAll(".point").attr("transform", iconPosition)
+                .attr("d", iconPath);
     }
 
     function plot(year) {
@@ -81,8 +79,8 @@
                 .attr("d", path);
         area.exit().remove();
 
-        var pointsToPlot = _.filter(points_of_interest.points, function(point) {
-           return point['year'] == year
+        var pointsToPlot = _.filter(points_of_interest.points, function (point) {
+            return point['year'] == year
         });
         plot_point_of_interest(pointsToPlot);
 
@@ -92,15 +90,17 @@
 
     //Draw points of interest
     function plot_point_of_interest(points) {
-        var points = g.selectAll(".point").data(points)
-                .attr("d", iconPath)
-                .attr("transform", iconPosition)
-                .on("click", function(d,i) {alert("Hey you!");});
+        var points = g.selectAll(".point").data(points);
+        points.attr("d", iconPath)
+                .attr("transform", iconPosition);
         points.enter().append("path")
                 .attr("class", "point")
                 .attr("d", iconPath)
                 .attr("transform", iconPosition);
         points.exit().remove();
+        d3.selectAll(".point").on("click", function (d, i) {
+            $("#text_container").toggle();
+        })
     }
 
     function iconPath(data, index) {
@@ -131,6 +131,11 @@
         $('#slider').attr("style", "width:" + (width - 70) + "px");
     });
 
-
 </script>
+
+<div id="text_container">
+    <div>
+        Content goes here
+    </div>
+</div>
 </body>
