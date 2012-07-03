@@ -48,3 +48,8 @@ body {
     padding: 10px;
     background-color: rgba(204,204,255,0.5);
 }
+
+#text_container .close {
+    float: right;
+    cursor: pointer;
+}

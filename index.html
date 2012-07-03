@@ -99,7 +99,7 @@
                 .attr("transform", iconPosition);
         points.exit().remove();
         d3.selectAll(".point").on("click", function (d, i) {
-            $("#text_container").toggle();
+            $("#text_container").show();
         })
     }
 
@@ -131,10 +131,15 @@
         $('#slider').attr("style", "width:" + (width - 70) + "px");
     });
 
+    $(".close").live("click", function() {
+       $("#text_container").hide();
+    });
+
 </script>
 
 <div id="text_container">
     <div>
+        <img class="close" src="image/close.png" />
         Content goes here
     </div>
 </div>
