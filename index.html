@@ -10,13 +10,13 @@
 <body>
 <div id="controls">
     <div id="slider"></div>
-    <div id="year"></div>
 </div>
 <script>
 
     var margin = {top:0, right:0, bottom:0, left:0},
             width = $(document).width(),
-            height = $(document).height();
+            height = $(document).height(),
+            currentZoomLevel = 0;
 
     var projection = d3.geo.mercator()
             .scale(width)
@@ -52,9 +52,9 @@
                 .attr("d", path);
     });
 
-    var events;
+    var areas_of_interest;
     d3.json("json/areas-of-interest.json", function (collection) {
-        events = collection;
+        areas_of_interest = collection;
     });
 
     var points_of_interest;
@@ -63,34 +63,46 @@
     });
 
     function panAndZoom() {
+        currentZoomLevel = getZoomIndex(d3.event.scale,zoom.scaleExtent());
         projection.translate(d3.event.translate).scale(d3.event.scale);
         g.selectAll("path").attr("d", path);
         g.selectAll(".point").attr("transform", iconPosition)
                 .attr("d", iconPath);
+        plotPointsOfInterest(currentYear, currentZoomLevel);
     }
 
-    function plot(year) {
-        var toPlot = _.filter(events.features, function (feature) {
-            return feature.properties['year'] == year
+    function getZoomIndex(currentScale, scaleExtent) {
+        var zoomLevels = 3;
+        var range = scaleExtent[1] - scaleExtent[0];
+        return Math.round(currentScale * zoomLevels/ range);
+    }
+
+    function iconPath(data, index) {
+        return data.drawing;
+    }
+
+    function iconPosition(data, index) {
+        return "translate(" + projection(data.location).toString() + ")";
+    }
+
+    function plotAreasOfInterest(currentYear) {
+        var toPlot = _.filter(areas_of_interest.features, function (feature) {
+            return feature.properties['year'] == currentYear
         });
         area = g.selectAll(".area").data(toPlot).attr("d", path);
         area.enter().append("path")
-                .attr("class", "feature area")
+                .attr("class", "area")
                 .attr("d", path);
         area.exit().remove();
-
-        var pointsToPlot = _.filter(points_of_interest.points, function (point) {
-            return point['year'] == year
-        });
-        plot_point_of_interest(pointsToPlot);
-
-        //Refresh the feature items to include the newly added ones
-        feature = g.selectAll(".feature");
     }
 
     //Draw points of interest
-    function plot_point_of_interest(points) {
-        var points = g.selectAll(".point").data(points);
+    function plotPointsOfInterest(currentYear, zoomLevel) {
+        console.log("zoom level: " + zoomLevel);
+        var pointsToPlot = _.filter(points_of_interest.points, function (point) {
+            return ((point['year'] == currentYear) && (point['zoomLevel'] == zoomLevel))
+        });
+        var points = g.selectAll(".point").data(pointsToPlot);
         points.attr("d", iconPath)
                 .attr("transform", iconPosition);
         points.enter().append("path")
@@ -103,17 +115,9 @@
         })
     }
 
-    function iconPath(data, index) {
-        return data.drawing;
-    }
-
-    function iconPosition(data, index) {
-        return "translate(" + projection(data.location).toString() + ")";
-    }
-
     //Year label
     function updateYearLabel(label) {
-        $("#year").html(label);
+        $(".ui-slider-handle").html("<p>" + label + "</p>");
     }
 
     $(function () {
@@ -122,24 +126,24 @@
             value:0,
             min:1000,
             max:2000,
-            step:50,
             slide:function (event, ui) {
-                plot(ui.value);
+                currentYear = Math.round(ui.value / 50) * 50;
+                plotAreasOfInterest(currentYear);
+                plotPointsOfInterest(currentYear, currentZoomLevel);
                 updateYearLabel(ui.value);
             }
         });
-        $('#slider').attr("style", "width:" + (width - 70) + "px");
+        $('#slider').attr("style", "width:" + (width - 100) + "px");
     });
 
-    $(".close").live("click", function() {
-       $("#text_container").hide();
+    $(".close").live("click", function () {
+        $("#text_container").hide();
     });
 
 </script>
-
 <div id="text_container">
     <div>
-        <img class="close" src="image/close.png" />
+        <img class="close" src="image/close.png"/>
         Content goes here
     </div>
 </div>

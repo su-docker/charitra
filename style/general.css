@@ -3,17 +3,19 @@ body {
 }
 
 #slider {
-    float: left;
     width: 400px; /* Will be overridden by script */
     margin: 10px 20px;
     position: absolute;
+    bottom: 30px;
 }
 
-#year {
-    position: absolute;
-    font-size: 48px;
-    bottom: 20px;
-    right: 20px;
+#slider a {
+    text-decoration: none;
+}
+
+#slider p {
+    margin-top: -25px;
+    text-align: center;
 }
 
 .frame {
@@ -33,6 +35,7 @@ body {
 
 .point {
     fill: #245dff;
+    cursor: pointer;
 }
 
 #text_container {
@@ -47,9 +50,13 @@ body {
     border: 1px gray solid;
     padding: 10px;
     background-color: rgba(204,204,255,0.5);
+    min-height: 50%;
+    max-height: 80%
 }
 
 #text_container .close {
     float: right;
     cursor: pointer;
 }
+
+
