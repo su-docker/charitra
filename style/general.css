@@ -63,3 +63,15 @@ image {
     z-index: 1000;
 }
 
+#editor {
+    background-color: rgba(128, 128, 128, 0.40);
+    position: absolute;
+    top: 40px;
+    right: 10px;
+}
+
+#editor p {
+    float: left;
+    margin: 0px;
+    padding: 5px;
+}

@@ -43,11 +43,6 @@
             feature = g.selectAll(".feature"),
             area = g.selectAll(".area");
 
-    g.append("rect")
-            .attr("class", "frame")
-            .attr("width", width)
-            .attr("height", height);
-
     d3.json("json/world-countries.json", function (collection) {
         areasG.selectAll("path")
                 .data(collection.features)
@@ -171,11 +166,40 @@
             }
         });
         $('#slider').attr("style", "width:" + (width - 100) + "px");
+
     });
 
     $(".close").live("click", function () {
         $("#text_container").hide();
     });
+
+    //Enable mapping
+    var mappingMode = false;
+    var currentPath = [];
+    $(function() {
+        if(mappingMode) {
+            $('svg').click(function(event) {
+                var xy = [event.clientX, event.clientY];
+                $('#drawing').append("["+projection.invert(xy)+"],");
+                currentPath.push(projection.invert(xy));
+                var pathToDraw = [{"type":"Feature", "geometry":{"type":"Polygon","coordinates": [currentPath]}}]
+                $(".plotting").remove();
+                svg.selectAll(".drawing").data(pathToDraw)
+                        .enter()
+                        .append("path")
+                        .attr("class", "plotting")
+                        .attr("d",path);
+            });
+            $('#clear').click(function() {
+                currentPath = [];
+                $("#drawing").html("");
+                $(".plotting").remove();
+            })
+        } else {
+            $("#editor").remove();
+        }
+    });
+
 
 </script>
 <div id="text_container">
@@ -183,5 +207,9 @@
         <img class="close" src="image/close.png"/>
         Content goes here
     </div>
+</div>
+<div id="editor">
+    <p id="drawing"></p>
+    <input type="button" value="clear" id="clear"/>
 </div>
 </body>
