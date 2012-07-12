@@ -155,9 +155,7 @@
                 .attr("height", function(d) { return d.height })
                 .on("click", showDescription);
         images.exit().remove();
-//        d3.selectAll("image").on("click", function (d, i) {
-//            showDescription();
-//        });
+
         var titles = pointsG.selectAll("text").data(imagesJson);
         titles.enter().append("text")
                 .attr("x", function(d) { return projection(d.location)[0] })
