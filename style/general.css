@@ -38,6 +38,10 @@ body {
     cursor: pointer;
 }
 
+image {
+    cursor: pointer;
+}
+
 #text_container {
     display: none;
     position: absolute;

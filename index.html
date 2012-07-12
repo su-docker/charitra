@@ -63,6 +63,7 @@
 
     function panAndZoom() {
         currentZoomLevel = getZoomIndex(d3.event.scale);
+//        console.log("translate: " + d3.event.translate + " zoom: " + d3.event.scale);
         projection.translate(d3.event.translate).scale(d3.event.scale);
         g.selectAll("path").attr("d", path);
         g.selectAll(".point").attr("transform", iconPosition).attr("d", iconPath);
@@ -75,8 +76,8 @@
         return Math.round(currentScale * zoomLevels/ zoomRange);
     }
 
-    function getScale(currentZoom, scaleExtent) {
-        return currentZoom * zoomRange / zoomLevels;
+    function getScale(currentZoomIndex) {
+        return currentZoomIndex * zoomRange / zoomLevels;
     }
 
     function iconPath(data, index) {
@@ -124,7 +125,7 @@
         points.exit().remove();
         d3.selectAll(".point").on("click", function (d, i) {
             $("#text_container").show();
-        })
+        });
     }
 
     function plotImages(imagesJson) {
@@ -141,10 +142,22 @@
                 .attr("width", function(d) { return d.width })
                 .attr("height", function(d) { return d.height });
         images.exit().remove();
+        d3.selectAll("image").on("click", function (d, i) {
+            $("#text_container").show();
+        });
+        var titles = pointsG.selectAll("text").data(imagesJson);
+        titles.enter().append("text")
+                .attr("x", function(d) { return projection(d.location)[0] })
+                .attr("y", function(d) { return projection(d.location)[1] })
+                .text(function(d) { return d.title });
+        titles.attr("x", function(d) { return projection(d.location)[0] })
+                .attr("y", function(d) { return projection(d.location)[1] })
+                .text(function(d) { return d.title });
+        titles.exit().remove();
     }
 
     function warp(location, zoomLevel) {
-        g.attr("transform", "scale(" + getScale(zoomLevel) + ")translate(" + projection(location) + ")" );
+        g.selectAll(".feature").attr("transform", "scale(" + getScale(zoomLevel, zoom.scaleExtent) + ")translate(" + projection(location) + ")" );
     }
 
     //Year label
