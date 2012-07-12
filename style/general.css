@@ -16,6 +16,7 @@ body {
 #slider p {
     margin-top: -25px;
     text-align: center;
+    font-size: 14px;
 }
 
 .frame {
@@ -30,7 +31,7 @@ body {
 }
 
 .area {
-    fill: #FFEECA;
+    fill: rgba(250,244,195,0.75);
 }
 
 .point {
@@ -47,7 +48,7 @@ image {
     position: absolute;
     z-index: 100;
     width: 50%;
-    height: 90%;
+    height: 50%;
     top: 2%;
     left: 2%;
     border-radius: 10px;
@@ -56,6 +57,10 @@ image {
     background-color: rgba(204,204,255,0.5);
     min-height: 50%;
     max-height: 80%
+}
+
+.plotting {
+    fill: rgba(204,204,255,0.5);
 }
 
 #text_container .close {

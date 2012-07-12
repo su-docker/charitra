@@ -61,6 +61,11 @@
         points_of_interest = collection;
     });
 
+    var details;
+    d3.json("json/details.json", function (collection) {
+        details = collection;
+    });
+
     function panAndZoom() {
         currentZoomLevel = getZoomIndex(d3.event.scale);
 //        console.log("translate: " + d3.event.translate + " zoom: " + d3.event.scale);
@@ -90,7 +95,13 @@
 
     function plotAreasOfInterest(currentYear) {
         var toPlot = _.filter(areas_of_interest.features, function (feature) {
-            return feature.properties['year'] == currentYear
+            var yearInput = feature.properties['year'];
+            if(yearInput.indexOf("-") != -1) {
+                var yearRange = yearInput.split("-").sort();
+                return  (currentYear >= yearRange[0]) && (currentYear <= yearRange[1]);
+            } else {
+                return currentYear == yearInput;
+            }
         });
         area = areasG.selectAll(".area").data(toPlot);
         area.enter()
@@ -124,7 +135,7 @@
                 .attr("d", iconPath);
         points.exit().remove();
         d3.selectAll(".point").on("click", function (d, i) {
-            $("#text_container").show();
+                //showDescription();
         });
     }
 
@@ -135,16 +146,18 @@
                 .attr("x", function(d) { return projection(d.location)[0] })
                 .attr("y", function(d) { return projection(d.location)[1] })
                 .attr("width", function(d) { return d.width })
-                .attr("height", function(d) { return d.height });
+                .attr("height", function(d) { return d.height })
+                .on("click", showDescription);
         images.attr("xlink:href", function(d){return d.image})
                 .attr("x", function(d) { return projection(d.location)[0] })
                 .attr("y", function(d) { return projection(d.location)[1] })
                 .attr("width", function(d) { return d.width })
-                .attr("height", function(d) { return d.height });
+                .attr("height", function(d) { return d.height })
+                .on("click", showDescription);
         images.exit().remove();
-        d3.selectAll("image").on("click", function (d, i) {
-            $("#text_container").show();
-        });
+//        d3.selectAll("image").on("click", function (d, i) {
+//            showDescription();
+//        });
         var titles = pointsG.selectAll("text").data(imagesJson);
         titles.enter().append("text")
                 .attr("x", function(d) { return projection(d.location)[0] })
@@ -154,6 +167,12 @@
                 .attr("y", function(d) { return projection(d.location)[1] })
                 .text(function(d) { return d.title });
         titles.exit().remove();
+    }
+
+    function showDescription(data) {
+        console.log("sdf");
+        $("#text_container div").html(details[data.detailsId]);
+        $("#text_container").show();
     }
 
     function warp(location, zoomLevel) {
@@ -169,25 +188,29 @@
         // Slider
         $('#slider').slider({
             value:0,
-            min:1000,
-            max:2000,
+            min:230,
+            max:330,
             slide:function (event, ui) {
-                currentYear = Math.round(ui.value / 50) * 50;
+                currentYear = 230 + 330 - round(ui.value);
                 plotAreasOfInterest(currentYear);
                 plotPointsOfInterest(currentYear, currentZoomLevel);
-                updateYearLabel(ui.value);
+                updateYearLabel(currentYear + "B.C");
             }
         });
         $('#slider').attr("style", "width:" + (width - 100) + "px");
 
     });
 
+    function round(value) {
+        return Math.round(value / 5) * 5
+    }
+
     $(".close").live("click", function () {
         $("#text_container").hide();
     });
 
     //Enable mapping
-    var mappingMode = false;
+    var mappingMode = true;
     var currentPath = [];
     $(function() {
         if(mappingMode) {
@@ -216,9 +239,9 @@
 
 </script>
 <div id="text_container">
+    <img class="close" src="image/close.png"/>
     <div>
-        <img class="close" src="image/close.png"/>
-        Content goes here
+        ...
     </div>
 </div>
 <div id="editor">
