@@ -1,4 +1,6 @@
 {"points":[
+{"year":330, "zoomLevel":0, "location":[84.24111930708516,23.20247169201832], "image":"image/star.png", "title":"Magadha", "width":"16", "height":"16", "detailsId":"Magadha1"},
+{"year":320, "zoomLevel":0, "location":[77.36705213018409,26.272347694208975], "image":"image/star.png", "title":"Nanda Empire", "width":"16", "height":"16", "detailsId":"Nanda1"},
 {"year":305, "zoomLevel":1, "location":[84.94211577836374,26.203291565658674], "image":"image/crown.png", "title":"Ashoka was born", "width":"32", "height":"32", "detailsId":"1"},
 {"year":273, "zoomLevel":1, "location":[84.94211577836374,26.203291565658674], "image":"image/close.png", "title":"Bindusara's Death", "width":"32", "height":"32", "detailsId":"2"},
 {"year":260, "zoomLevel":1, "location":[84.33690621018212,20.372362215643136], "image":"image/war.png", "title":"Kalinga War", "width":"32", "height":"32", "detailsId":"3"},
